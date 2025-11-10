@@ -1,0 +1,8 @@
+# LOGIN USER
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "mimi",
+  "password": "miawmiaw"
+}
