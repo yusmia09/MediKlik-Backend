@@ -37,13 +37,13 @@ const upload = multer({storage});
 //Add Product
 router.post("/", verifyAdmin, upload.single("image"), async (req,res) => {
     try {
-        const { name, description, price, stock, size, category } = req.body;
+        const { name, description, price, stock, size, category, active } = req.body;
         const imagePath = req.file ? req.file.path: null;
 
         if (!name || !price || !category)
             return res.status(400).json({ message: "name, price, and category must be filled"});
         const newProduct = await Product.create({
-            name, description, price, stock,size, category, image: imagePath, 
+            name, description, price, stock,size, category, image: imagePath, active: active!== undefined? active: true,
         });
         res.status(201).json({ message: "Product added seccessfully", product: newProduct});
     } catch (err) {
@@ -75,29 +75,37 @@ router.get("/:id", async (req, res) => {
 //Update Product
 router.put("/:id", verifyAdmin, upload.single("image"), async (req, res) => {
     try {
-        const { name, description, price, stock, size, category } = req.body;
-        const imagePath = req.file ? req.file.path: undefined;
+        console.log("🔄 Incoming UPDATE request:", req.params.id);
+        console.log("Body:", req.body);
+        console.log("File:", req.file);
+
+        const { name, description, price, stock, size, category, active } = req.body;
+        const imagePath = req.file ? req.file.path : undefined;
         
         const updatedData = {
-            name, description, price, stock, size, category,
+            name, description, price, stock, size, category, active
         };
 
         if (imagePath) updatedData.image = imagePath;
+        if (typeof active !== "undefined") updatedData.active = active;
         
         const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id,
             updatedData,
-            {new: true}
+            { new: true }
         );
 
         if (!updatedProduct)
-            return res.status(404).json({ message: "Product not found "});
+            return res.status(404).json({ message: "Product not found" });
 
+        console.log("✅ Updated Product:", updatedProduct);
         res.json({ message: "Product successfully updated", updatedProduct });
     } catch (err) {
-        res.status(500).json({ message: err.message})
+        console.error("❌ ERROR UPDATE PRODUCT:", err);
+        res.status(500).json({ message: err.message });
     }
 });
+
 
 // Delete Product
 router.delete("/:id", verifyAdmin, async (req, res) => {
@@ -107,6 +115,25 @@ router.delete("/:id", verifyAdmin, async (req, res) => {
         res.json({message: "Product deleted successfully"});
     } catch (err) {
         res.status(500).json({message: err.message});
+    }
+});
+
+// Summary Endpoint
+router.get("/summary/data", async (req, res) => {
+    try {
+    const totalProducts = await Product.countDocuments();
+    const activeProducts = await Product.countDocuments({ active: true });
+    const lowStock = await Product.countDocuments({ stock: { $lt: 5, $gt: 0 } });
+    const outOfStock = await Product.countDocuments({ stock: { $lte: 0 } });
+
+    res.json({
+      totalProducts,
+      activeProducts,
+      lowStock,
+      outOfStock,
+    });
+    } catch (err) {
+        res.status(500).json({ message: err.message});
     }
 });
 
