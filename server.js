@@ -8,6 +8,7 @@ import categoryRouter from "./routes/categoryRouter.js";
 import productRouter from "./routes/productRouter.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import userRoutes from "./routes/authRoutes.js"; 
 import orderRoutes from "./routes/orderRoutes.js";
 import cartRoutes from './routes/cartRoutes.js';
 
@@ -31,7 +32,7 @@ app.use("/api/products", productRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/orders",orderRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/cart/checkout", cartRoutes);
+app.use("/api/users", userRoutes);
 
 app.listen(process.env.PORT, () =>
   console.log(`🚀 Server running on port ${process.env.PORT}`)

@@ -104,4 +104,16 @@ router.put("/:id/status", verifyAdmin, async(req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+router.get("/my", verifyUser, async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user.id })
+      .populate("products.product", "name price");
+
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
  export default router;

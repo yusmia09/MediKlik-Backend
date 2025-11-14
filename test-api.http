@@ -1,8 +1,8 @@
-POST http://localhost:5000/api/cart/checkout
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDcwMTgwZmQxOGJiZmFkMGJiNmFmMyIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc2MzA0Mzk3NSwiZXhwIjoxNzYzMTMwMzc1fQ.RugNWLZo5fgdeKnPjSv0nI0YQeyQn06rRvu0ysVucI4
+# LOGIN USER
+POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "address": "Jl. Melati No. 7",
-  "paymentMethod": "COD"
+  "username": "user",
+  "password": "123456"
 }
